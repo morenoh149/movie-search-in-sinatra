@@ -1,2 +1,99 @@
-<h1>Hello world</h1>
-test
+<html>
+<head>
+</head>
+<body>
+<h1>Omdb</h1>
+<a href="/favorites">See favorited movies</a>
+
+<h2>Movie Search</h2>
+<form>
+  <input onkeyup="searchOmdb(event)" />
+</form>
+<div id='search-results'></div>
+
+<script>
+/*
+ * common variables
+ */
+const apikey = 'f4987052';
+const baseUrl = 'http://www.omdbapi.com/';
+
+/*
+ * searchOmdb is called when the user types into the search field.
+ * If the search term is less than 2 characters we do nothing,
+ * else, we query omdb and display the results on the page.
+ */
+const searchOmdb = async event => {
+  let searchTerm = event.target.value;
+  if (searchTerm.length > 2) {
+    const url = `${baseUrl}?apikey=${apikey}&type=movie&s=${searchTerm}`;
+    let response = await fetch(url);
+    response = await response.json();
+    const resultArea = document.getElementById('search-results');
+    if (!response['Search']) {
+      resultArea.innerHTML = 'No Results';
+    } else {
+      resultArea.innerHTML = response['Search'].map(movie => {
+        return `
+          <div>
+            <a
+              href="#${movie['imdbID']}"
+              onclick="loadDetails(event, '${movie['imdbID']}')"
+            >
+              ${movie['Title']}
+            </a>
+            <div id="details-${movie['imdbID']}" class="detail"></div>
+            <a
+              href="#favorite-${movie['imdbID']}"
+              onclick="favoriteMovie('${movie['Title']}', '${movie['imdbID']}')"
+            >
+              🌟 Favorite this!
+            </a>
+          </div>
+        `;
+      }).join("<br />");
+    }
+  }
+};
+
+/*
+ * loadDetails is called when the user clicks on a search result, it queries
+ * omdb for the movie's details and displays it on the page.
+ * We wipe all the detail section to make this function reentrant.
+ */
+const loadDetails = async (event, imdbID) => {
+  // wipe detail areas
+  const detailAreas = document.getElementsByClassName('detail');
+  Array.prototype.forEach.call(detailAreas, element => element.innerHTML = '');
+
+  // fetch movie detail
+  const url = `${baseUrl}?apikey=${apikey}&type=movie&i=${imdbID}`;
+  let response = await fetch(url);
+  response = await response.json();
+
+  // insert detail on page
+  const selector = `div[id="details-${imdbID}"]`;
+  const detailArea = document.querySelector(selector);
+  detailArea.innerHTML = response['Plot'];
+};
+
+/*
+ * favoriteMovie sends a POST request to the api to store this movie.
+ */
+const favoriteMovie = async (name, oid) => {
+  const url = `/favorites?name=${name}&oid=${oid}`;
+  let response = await fetch(url, {
+    method: 'POST'
+  });
+  response = response.json();
+
+  // give user feedback that the movie was saved.
+  const selector = `a[href="#favorite-${oid}"]`;
+  const confirmationArea = document.querySelector(selector);
+  const temp = confirmationArea.innerHTML;
+  confirmationArea.innerHTML = "✅ Saved.";
+  setTimeout(() => confirmationArea.innerHTML = temp, 1000);
+};
+</script>
+</body>
+</html>
