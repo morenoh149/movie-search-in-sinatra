@@ -3,7 +3,6 @@
 ## installation
 
 * verify modern ruby `$ ruby -v`, mine is 2.6.3
-* `$ cd ruby-backend-starter-code/`
 * `$ bundle install`
 
 ## usage
