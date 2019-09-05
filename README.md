@@ -1,5 +1,9 @@
 # Solution
 
+## Deployed
+
+https://limitless-brook-46401.herokuapp.com
+
 ## installation
 
 * verify modern ruby `$ ruby -v`, mine is 2.6.3
