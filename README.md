@@ -1,4 +1,6 @@
-# Solution
+# Movie Search in Sinatra
+
+<img width="784" alt="Movie Search Sinatra" src="https://user-images.githubusercontent.com/587438/167032485-0b93bb20-c5f7-4aba-af9c-2fbb9dd3376a.png">
 
 ## Deployed
 
